@@ -1,3 +1,4 @@
+#include <math.h>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -21,6 +22,22 @@ int window_width = 800, window_height = 600;
 float window_aspect = window_width / static_cast<float>(window_height);
 
 bool scene_lighting;
+
+// previous coords
+
+struct Point2d {
+  int x;
+  int y;
+};
+
+Point2d previous_mouse_coord;
+
+Vec3f crossProd(const Vec3f & a, const Vec3f & b) {
+  float x = a.x[1]*b.x[2] - a.x[2]*b.x[1];
+  float y = a.x[2]*b.x[0] - a.x[0]*b.x[2];
+  float z = a.x[0]*b.x[1] - a.x[1]*b.x[0];
+  Vec3f result = Vec3f::makeVec(x, y, z);
+}
 
 void Display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -94,6 +111,30 @@ void MultMatrix(GLfloat* m) {
   glMultMatrixf(m);
 }
 
+void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
+  // calculation of p
+  float xp = static_cast<float>(previous_mouse_coord.x)*2/
+  (window_width-1);
+  float yp = static_cast<float>(previous_mouse_coord.y);
+  float zp = sqrt(1- pow(xp, 2) - pow(yp, 2));
+  Vec3f p = {xp, yp, zp};
+  // calculation of q
+  float xq = window_height - static_cast<float>(current_mouse_coord.x)*
+  2/(window_height-1);
+  float yq = static_cast<float>(current_mouse_coord.y);
+  float zq = sqrt(1- pow(xq, 2) - pow(yq, 2));
+  Vec3f q = {xq, yq, zq};
+  // calculation of angle
+  float angle = p * q;
+  // calculation of normal
+  Vec3f origin = {0, 0, 0 };
+  Vec3f n = crossProd(p - origin, q - origin);
+  // rotation by angle on axis n
+  glRotatef(angle, n.x[0], n.x[1], n.x[2]);
+}
+
+
+
 void Init() {
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
@@ -132,11 +173,26 @@ void DrawAxis() {
 
 void MouseButton(int button, int state, int x, int y) {
   // TODO implement arc ball and zoom
+  // we store the first coords of the mouse
+  if (button == GLUT_LEFT_BUTTON) {
+    if (state == GLUT_DOWN) {
+      previous_mouse_coord.x = x;
+      previous_mouse_coord.y = y;
+    }
+  }
+
   glutPostRedisplay();
 }
 
 void MouseMotion(int x, int y) {
   // TODO implement arc ball and zoom
+  Point2d current_mouse_coord;
+  current_mouse_coord.x = x;
+  current_mouse_coord.y = y;
+  // Rotation takes the coords of the mouse and do the matrices
+  // multiplications
+  Rotation(previous_mouse_coord, current_mouse_coord);
+  previous_mouse_coord = current_mouse_coord;
   glutPostRedisplay();
 }
 
