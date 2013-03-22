@@ -37,25 +37,28 @@ Point2d previous_mouse_coord;
 // new variables
 
 bool left_button_down = false;
+GLfloat current_matrix[16];
 
-Vec3f crossProd(const Vec3f & a, const Vec3f & b) {
+Vec3f crossProd(Vec3f a, Vec3f b) {
   float x = a.x[1]*b.x[2] - a.x[2]*b.x[1];
   float y = a.x[2]*b.x[0] - a.x[0]*b.x[2];
   float z = a.x[0]*b.x[1] - a.x[1]*b.x[0];
-  Vec3f result = Vec3f::makeVec(x, y, z);
+  Vec3f result = {x, y, z};
+  return result;
 }
 
 void Display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+  /*
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(40.0, window_aspect, 1, 1500);
-
+  */
   // TODO call gluLookAt such that mesh fits nicely in viewport.
   // mesh.bb() may be useful.
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  // glMatrixMode(GL_MODELVIEW);
+  // glLoadIdentity();
+  // LoadMatrix(current_matrix);
   gluLookAt(2, 2, 5,
             0, 0, 0,
             0, 1, 0);
@@ -65,9 +68,13 @@ void Display() {
   // remain normalized throughout transformations.
 
   // You can leave the axis in if you like.
+
+
+
   glDisable(GL_LIGHTING);
   glLineWidth(4);
   DrawAxis();
+  glutWireCube(1);
   glEnable(GL_LIGHTING);
 
   glFlush();
@@ -117,28 +124,53 @@ void MultMatrix(GLfloat* m) {
   glMultMatrixf(m);
 }
 
+void printVector(Vec3f v, const char* name) {
+  cout << name << " ";
+  cout << " (" << v.x[0] << ", ";
+  cout << v.x[1] << ", " << v.x[2] << ")" << endl;
+}
+
 void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
+  // Load the previous change in the matrix
+  // LoadMatrix(current_matrix);
   // calculation of p
-  float xp = static_cast<float>(previous_mouse_coord.x);
-  xp = 2*xp/(window_width - 1);
-  float yp = static_cast<float>(previous_mouse_coord.y);
-  yp = 2*(window_height - yp)/(window_height - 1);
-  float zp = sqrt(1- pow(xp, 2) - pow(yp, 2));
-  Vec3f p = {xp, yp, zp};
+  float x_p = static_cast<float>(previous_mouse_coord.x);
+  x_p = 2*x_p/window_width - 1;
+  float y_p = static_cast<float>(previous_mouse_coord.y);
+  y_p = 2*(window_height - y_p)/window_height - 1;
+  float z_p;
+  float root_p = (1- pow(x_p, 2) - pow(y_p, 2));
+  if (root_p < 0) {
+    z_p = sqrt(-1 * (1- pow(x_p, 2) - pow(y_p, 2) ) );
+  } else {
+    z_p = sqrt(1- pow(x_p, 2) - pow(y_p, 2));
+  }
+  Vec3f p = {x_p, y_p, z_p};
+  printVector(p, "p");
   // calculation of q
-  float xq = static_cast<float>(current_mouse_coord.x);
-  xq = 2*xq/(window_width - 1);
-  float yq = static_cast<float>(current_mouse_coord.y);
-  yq = 2*(window_height - yq)/(window_height - 1);
-  float zq = sqrt(1- pow(xq, 2) - pow(yq, 2));
-  Vec3f q = {xq, yq, zq};
-  // calculation of angle
-  float angle = acos(p.norm() * q.norm())*180/PI;
+  float x_q = static_cast<float>(current_mouse_coord.x);
+  x_q = 2*x_q/window_width - 1;
+  float y_q = static_cast<float>(current_mouse_coord.y);
+  y_q = 2*(window_height - y_q)/window_height - 1;
+  float z_q;
+  float root_q = (1- pow(x_q, 2) - pow(y_q, 2));
+  if (root_q < 0) {
+    z_q = sqrt(-1 * (1- pow(x_q, 2) - pow(y_q, 2) ) );
+  } else {
+    z_q = sqrt(1- pow(x_q, 2) - pow(y_q, 2));
+  }
+  Vec3f q = {x_q, y_q, z_q};
+  printVector(q, "q");
+  // calculation of angle with unitary p and q
+  float angle = acos(p.unit() * q.unit())*180/PI;
   // calculation of normal
   Vec3f origin = {0, 0, 0 };
   Vec3f n = crossProd(p - origin, q - origin);
   // rotation by angle on axis n
+  cout << "rotation of angle " << angle << endl;
+  printVector(n, "normal");
   glRotatef(angle, n.x[0], n.x[1], n.x[2]);
+  glGetFloatv(GL_MODELVIEW_MATRIX, current_matrix);
 }
 
 
@@ -159,6 +191,12 @@ void Init() {
   glLoadIdentity();
 
   gluPerspective(40.0, window_aspect, 1, 1500);
+
+  // added for current_matrix
+  glMatrixMode(GL_MODELVIEW_MATRIX);
+  glLoadIdentity();
+  glGetFloatv(GL_MODELVIEW_MATRIX, current_matrix);
+  PrintMatrix(current_matrix);
 }
 
 void DrawAxis() {
@@ -204,7 +242,7 @@ void MouseMotion(int x, int y) {
     // Rotation takes the coords of the mouse and do the matrices
     // multiplications
     Rotation(previous_mouse_coord, current_mouse_coord);
-    // previous_mouse_coord = current_mouse_coord;
+    previous_mouse_coord = current_mouse_coord;
     glutPostRedisplay();
   }
 }
@@ -243,7 +281,7 @@ int main(int argc, char *argv[]) {
   Init();
 
   if (string(argv[1]) == "-s") {
-    cout << "Create scene" << endl;
+    cout << "Creat scene" << endl;
   } else {
     string filename(argv[1]);
     cout << filename << endl;
