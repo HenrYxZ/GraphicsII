@@ -54,22 +54,22 @@ void Display() {
   glLoadIdentity();
   gluPerspective(40.0, window_aspect, 1, 1500);
   */
-  // TODO call gluLookAt such that mesh fits nicely in viewport.
-  // mesh.bb() may be useful.
-  // glMatrixMode(GL_MODELVIEW);
-  // glLoadIdentity();
-  // LoadMatrix(current_matrix);
+  /*
   gluLookAt(2, 2, 5,
             0, 0, 0,
             0, 1, 0);
+  */
+  // TODO call gluLookAt such that mesh fits nicely in viewport.
+  // mesh.bb() may be useful.
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  LoadMatrix(current_matrix);
 
   // TODO set up lighting, material properties and render mesh.
   // Be sure to call glEnable(GL_RESCALE_NORMAL) so your normals
   // remain normalized throughout transformations.
 
   // You can leave the axis in if you like.
-
-
 
   glDisable(GL_LIGHTING);
   glLineWidth(4);
@@ -125,14 +125,16 @@ void MultMatrix(GLfloat* m) {
 }
 
 void printVector(Vec3f v, const char* name) {
-  cout << name << " ";
+  cout << name << ": ";
   cout << " (" << v.x[0] << ", ";
   cout << v.x[1] << ", " << v.x[2] << ")" << endl;
 }
 
 void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   // Load the previous change in the matrix
-  // LoadMatrix(current_matrix);
+  cout << "previous matrix" << endl;
+  PrintMatrix(current_matrix);
+  LoadMatrix(current_matrix);
   // calculation of p
   float x_p = static_cast<float>(previous_mouse_coord.x);
   x_p = 2*x_p/window_width - 1;
@@ -171,6 +173,8 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   printVector(n, "normal");
   glRotatef(angle, n.x[0], n.x[1], n.x[2]);
   glGetFloatv(GL_MODELVIEW_MATRIX, current_matrix);
+  cout << "current matrix" << endl;
+  PrintMatrix(current_matrix);
 }
 
 
