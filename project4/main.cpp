@@ -40,6 +40,8 @@ bool left_button_down = false;
 GLfloat current_matrix[16];
 
 /*
+ * we can still use this, I was just testing the method in vec.h
+ * note that they have different function calls
 Vec3f crossProd(Vec3f a, Vec3f b) {
   float x = a.x[1]*b.x[2] - a.x[2]*b.x[1];
   float y = a.x[2]*b.x[0] - a.x[0]*b.x[2];
@@ -60,6 +62,7 @@ void Display() {
   gluLookAt(2, 2, 5,
             0, 0, 0,
             0, 1, 0);
+  // apply all transformations
   glMultMatrixf(current_matrix);
 
   // TODO set up lighting, material properties and render mesh.
@@ -127,7 +130,6 @@ void printVector(Vec3f v, const char* name) {
 }
 
 void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
-  // Load the previous change in the matrix
   // cout << "previous matrix" << endl;
   // PrintMatrix(current_matrix);
   // calculation of p
