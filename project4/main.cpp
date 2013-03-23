@@ -138,7 +138,11 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   float z_p;
   float root_p = (1- pow(x_p, 2) - pow(y_p, 2));
   if (root_p < 0) {
-    z_p = sqrt(-1 * (1- pow(x_p, 2) - pow(y_p, 2) ) );
+    // z_p = sqrt(-1 * (1- pow(x_p, 2) - pow(y_p, 2) ) );
+
+    // if the point is outside of the unit sphere, then the point lies
+    // somewhere in the xy plane, so z = 0
+    z_p = 0;
   } else {
     z_p = sqrt(1- pow(x_p, 2) - pow(y_p, 2));
   }
@@ -152,7 +156,7 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   float z_q;
   float root_q = (1- pow(x_q, 2) - pow(y_q, 2));
   if (root_q < 0) {
-    z_q = sqrt(-1 * (1- pow(x_q, 2) - pow(y_q, 2) ) );
+    z_q = 0;
   } else {
     z_q = sqrt(1- pow(x_q, 2) - pow(y_q, 2));
   }
