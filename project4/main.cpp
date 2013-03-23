@@ -130,8 +130,9 @@ void printVector(Vec3f v, const char* name) {
 }
 
 void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
-  // cout << "previous matrix" << endl;
-  // PrintMatrix(current_matrix);
+  cout << "previous matrix" << endl;
+  PrintMatrix(current_matrix);
+  cout << endl;
   // calculation of p
   float x_p = static_cast<float>(previous_mouse_coord.x);
   x_p = 2*x_p/window_width - 1;
@@ -165,13 +166,17 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   Vec3f q = {x_q, y_q, z_q};
   printVector(q, "q");
   // calculation of angle with unitary p and q
-  float angle = acos(p.unit() * q.unit())*180/PI;
+  float angle = acos(p.unit() * q.unit())*180.0/PI;
+  // cout << "rotation of angle1 " << angle << endl;
+  // if for some reason the angle comes out as NaN, change it to zero
+  if (angle != angle)
+    angle = 0;
   // calculation of normal
   Vec3f origin = {0, 0, 0 };
   p = p - origin;
   Vec3f n = p.crossProduct(q - origin);
   // rotation by angle on axis n
-  // cout << "rotation of angle " << angle << endl;
+  cout << "rotation of angle " << angle << endl;
   // printVector(n, "normal");
 
   // store the this rotation with all previous rotations
@@ -179,8 +184,9 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   glRotatef(angle, n.x[0], n.x[1], n.x[2]);
   glMultMatrixf(current_matrix);
   glGetFloatv(GL_MODELVIEW_MATRIX, current_matrix);
-  // cout << "current matrix" << endl;
-  // PrintMatrix(current_matrix);
+  cout << "current matrix" << endl;
+  PrintMatrix(current_matrix);
+  cout << "----------" << endl;
 }
 
 
