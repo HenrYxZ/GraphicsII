@@ -247,6 +247,35 @@ struct Vec
     return result;
   }
 
+    // Magnitude
+  float magnitude() {
+    float result = 0.0f;
+    for(int i=0;i<NumDims;i++)
+    {
+      result+=pow(x[i], 2);
+    }
+    return sqrt(result);
+  }
+
+  // Dot Product
+  float dotProduct(const Vec<NumType,NumDims> & b) {
+    float result = 0.0f;
+    for(int i=0;i<NumDims;i++)
+    {
+      result+=(x[i] * b.x[i]);
+    }
+    return result;
+  }
+
+  // Cross Product for 3d vectors
+  Vec<NumType,NumDims> crossProduct(const Vec<NumType,NumDims> & b) {
+    Vec<NumType,NumDims> result;
+    result.x[0] = x[1]*b.x[2] - x[2]*b.x[1];
+    result.x[1] = x[2]*b.x[0] - x[0]*b.x[2];
+    result.x[2] = x[0]*b.x[1] - x[1]*b.x[0];
+    return result;
+  }
+
   template <class NType, ushort NDims>
   friend ostream & operator<<(ostream & out, const Vec<NType,NDims> & v) ;
   template <class NType, ushort NDims>
