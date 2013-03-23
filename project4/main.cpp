@@ -36,9 +36,12 @@ Point2d previous_mouse_coord;
 
 // new variables
 
+float angle;
+Vec3f n;
 bool left_button_down = false;
 GLfloat current_matrix[16];
 
+/*
 Vec3f crossProd(Vec3f a, Vec3f b) {
   float x = a.x[1]*b.x[2] - a.x[2]*b.x[1];
   float y = a.x[2]*b.x[0] - a.x[0]*b.x[2];
@@ -46,31 +49,27 @@ Vec3f crossProd(Vec3f a, Vec3f b) {
   Vec3f result = {x, y, z};
   return result;
 }
-
+*/
 void Display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  /*
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(40.0, window_aspect, 1, 1500);
-  */
-  /*
-  gluLookAt(2, 2, 5,
-            0, 0, 0,
-            0, 1, 0);
-  */
   // TODO call gluLookAt such that mesh fits nicely in viewport.
   // mesh.bb() may be useful.
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  LoadMatrix(current_matrix);
+  gluLookAt(2, 2, 5,
+            0, 0, 0,
+            0, 1, 0);
+  glRotatef(angle, n.x[0], n.x[1], n.x[2]);
+  glMultMatrixf(current_matrix);
 
   // TODO set up lighting, material properties and render mesh.
   // Be sure to call glEnable(GL_RESCALE_NORMAL) so your normals
   // remain normalized throughout transformations.
 
   // You can leave the axis in if you like.
-
   glDisable(GL_LIGHTING);
   glLineWidth(4);
   DrawAxis();
@@ -164,10 +163,10 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   Vec3f q = {x_q, y_q, z_q};
   printVector(q, "q");
   // calculation of angle with unitary p and q
-  float angle = acos(p.unit() * q.unit())*180/PI;
+  angle = acos(p.unit() * q.unit())*180/PI;
   // calculation of normal
   Vec3f origin = {0, 0, 0 };
-  Vec3f n = crossProd(p - origin, q - origin);
+  n = crossProd(p - origin, q - origin);
   // rotation by angle on axis n
   cout << "rotation of angle " << angle << endl;
   printVector(n, "normal");
