@@ -32,13 +32,17 @@ void Mesh::AddTextureVertex(const Vec3f& v) {
 void Mesh::AddPolygon(const std::vector<int>& p, const std::vector<int>& pt) {
   // TODO
   Polygon n;
-  Vec3f norm;
   for (int i = 0; i < p.size(); i++) {
     n._verts.push_back(_vertices.at(p[i]));
     n._tex_verts.push_back(_tex_vertices.at(p[i]));
     // cout << "vertex at i: " << _vertices.at(p[i]) << endl;
     // cout << "tex vertex at i: " << _tex_vertices.at(p[i]) << "\n" << endl;
   }
+  // make normal
+  Vec3f a = n._verts[0] - n._verts[1];
+  Vec3f b = n._verts[0] - n._verts[2];
+  n._normal = a.crossProduct(b);
+  n._normal = n._normal.unit();
   _polygons.push_back(n);
   // updates the poly2mat map
   _polygon2material.push_back(_cur_mtl);

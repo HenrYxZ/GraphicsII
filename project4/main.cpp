@@ -55,15 +55,26 @@ Vec3f crossProd(Vec3f a, Vec3f b) {
 */
 void displayMesh() {
   glEnable(GL_TEXTURE_3D);
-  glBindTexture(GL_TEXTURE_3D, texture_ids[0]);  // probably not right
+  // glBindTexture(GL_TEXTURE_3D, texture_ids[0]);
   for (int i = 0; i < mesh.num_polygons(); ++i) {
     Polygon x = mesh.polygon(i);
+    Material mx = mesh.material(mesh.polygon2material(i));
+    glBindTexture(GL_TEXTURE_3D, texture_ids[mx.texture_id()]);
     glBegin(GL_POLYGON);
     for (int j = 0; j < x._verts.size(); ++j) {
       glTexCoord3d(x._tex_verts[j][0], x._tex_verts[j][1], x._tex_verts[j][2]);
       glVertex3f(x._verts[j][0], x._verts[j][1], x._verts[j][2]);
     }
     glEnd();
+/*
+    Vec3f n = x._verts[0];
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(n.x[0], n.x[1], n.x[2]);
+    n = n + x._normal;
+    glVertex3f(n.x[0], n.x[1], n.x[2]);
+    glEnd();
+*/
   }
 }
 
@@ -78,8 +89,7 @@ void Display() {
   glLoadIdentity();
   float maxD = (mesh.bb().max-mesh.bb().min).max();
   center = mesh.bb().center();
-  cout << center << endl;
-  eye = center+(Vec3f::makeVec(1.0f, 1.0f*maxD, 1.0f*maxD)*zoom);
+  eye = center+(Vec3f::makeVec(1.0f*maxD, 1.0f*maxD, 1.0f*maxD)*zoom);
   gluLookAt(eye[0],    eye[1],    eye[2],
             center[0], center[1], center[2],
             0,         1,         0);
@@ -195,7 +205,7 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   if (angle != angle)
     angle = 0;
   // calculation of normal
-  Vec3f origin = {0, 0, 0 };
+  Vec3f origin = {0, 0, 0};
   p = p - origin;
   Vec3f n = p.crossProduct(q - origin);
   // rotation by angle on axis n

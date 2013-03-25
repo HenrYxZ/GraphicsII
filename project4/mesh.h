@@ -17,7 +17,7 @@ struct Vertex {
 struct Polygon {
   vector<Vec3f> _verts;
   vector<Vec3f> _tex_verts;
-  Vec3f normal;
+  Vec3f _normal;
 };
 
 // This class represents a mesh, which contains vertices, polygons,
