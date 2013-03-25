@@ -38,6 +38,7 @@ Point2d previous_mouse_coord;
 
 bool left_button_down = false;
 GLfloat current_matrix[16];
+Vec3f center, eye;
 
 /*
  * we can still use this, I was just testing the method in vec.h
@@ -50,6 +51,20 @@ Vec3f crossProd(Vec3f a, Vec3f b) {
   return result;
 }
 */
+void displayMesh() {
+  glEnable(GL_TEXTURE_3D);
+  glBindTexture(GL_TEXTURE_3D, texture_ids[0]);  // probably not right
+  for (int i = 0; i < mesh.num_polygons(); ++i) {
+    Polygon x = mesh.polygon(i);
+    glBegin(GL_POLYGON);
+    for (int j = 0; j < x._verts.size(); ++j) {
+      glTexCoord3d(x._tex_verts[j][0], x._tex_verts[j][1], x._tex_verts[j][2]);
+      glVertex3f(x._verts[j][0], x._verts[j][1], x._verts[j][2]);
+    }
+    glEnd();
+  }
+}
+
 void Display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_PROJECTION);
@@ -59,9 +74,13 @@ void Display() {
   // mesh.bb() may be useful.
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(2, 2, 5,
-            0, 0, 0,
-            0, 1, 0);
+  float maxD = (mesh.bb().max-mesh.bb().min).max();
+  center = mesh.bb().center();
+  cout << center << endl;
+  eye = center+Vec3f::makeVec(0.0f, 1.0f*maxD, 1.0f*maxD);
+  gluLookAt(eye[0],    eye[1],    eye[2],
+            center[0], center[1], center[2],
+            0,         1,         0);
   // apply all transformations
   glMultMatrixf(current_matrix);
 
@@ -73,8 +92,10 @@ void Display() {
   glDisable(GL_LIGHTING);
   glLineWidth(4);
   DrawAxis();
-  glutWireCube(1);
+  // glutWireCube(1);
   glEnable(GL_LIGHTING);
+
+  displayMesh();
 
   glFlush();
   glutSwapBuffers();

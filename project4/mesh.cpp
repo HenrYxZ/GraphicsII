@@ -36,8 +36,8 @@ void Mesh::AddPolygon(const std::vector<int>& p, const std::vector<int>& pt) {
   for (int i = 0; i < p.size(); i++) {
     n._verts.push_back(_vertices.at(p[i]));
     n._tex_verts.push_back(_tex_vertices.at(p[i]));
-    cout << "vertex at i: " << _vertices.at(p[i]) << endl;
-    cout << "tex vertex at i: " << _tex_vertices.at(p[i]) << "\n" << endl;
+    // cout << "vertex at i: " << _vertices.at(p[i]) << endl;
+    // cout << "tex vertex at i: " << _tex_vertices.at(p[i]) << "\n" << endl;
   }
   _polygons.push_back(n);
   // updates the poly2mat map

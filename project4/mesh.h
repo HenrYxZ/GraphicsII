@@ -79,9 +79,15 @@ class Mesh {
 
   Material& material(int i) { return _materials[i]; }
 
+  Polygon& polygon(int i) { return _polygons[i]; }
+
   const BoundingBox& bb() const { return _bb; }
 
   int num_materials() const { return _materials.size(); }
+
+  int num_polygons() const { return _polygons.size(); }
+
+  int num_vertices() const { return _vertices.size(); }
 
   void compute_normals();
 
