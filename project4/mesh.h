@@ -7,6 +7,18 @@
 #include "./vec.h"
 #include "./bb.h"
 #include "./material.h"
+/*
+struct Vertex {
+  float x;
+  float y;
+  float z;
+};
+*/
+struct Polygon {
+  vector<Vec3f> _verts;
+  vector<Vec3f> _tex_verts;
+  Vec3f normal;
+};
 
 // This class represents a mesh, which contains vertices, polygons,
 // and material properties for each polygon.
@@ -75,7 +87,9 @@ class Mesh {
 
  private:
   // TODO add necessary data structures here
-
+  vector<Vec3f> _vertices;
+  vector<Vec3f> _tex_vertices;
+  vector<Polygon> _polygons;
   std::vector<Material> _materials;
   std::vector<int> _polygon2material;
   int _cur_mtl;
