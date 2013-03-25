@@ -36,7 +36,9 @@ Point2d previous_mouse_coord;
 
 // new variables
 
+double zoom = 1.0;
 bool left_button_down = false;
+bool right_button_down = false;
 GLfloat current_matrix[16];
 Vec3f center, eye;
 
@@ -77,7 +79,7 @@ void Display() {
   float maxD = (mesh.bb().max-mesh.bb().min).max();
   center = mesh.bb().center();
   cout << center << endl;
-  eye = center+Vec3f::makeVec(0.0f, 1.0f*maxD, 1.0f*maxD);
+  eye = center+(Vec3f::makeVec(1.0f, 1.0f*maxD, 1.0f*maxD)*zoom);
   gluLookAt(eye[0],    eye[1],    eye[2],
             center[0], center[1], center[2],
             0,         1,         0);
@@ -265,6 +267,14 @@ void MouseButton(int button, int state, int x, int y) {
     } else {
       left_button_down = false;
     }
+  } else if (button == GLUT_RIGHT_BUTTON) {
+    if (state == GLUT_DOWN) {
+      right_button_down = true;
+      previous_mouse_coord.x = x;
+      previous_mouse_coord.y = y;
+    } else {
+      right_button_down = false;
+    }
   }
 
   glutPostRedisplay();
@@ -280,8 +290,15 @@ void MouseMotion(int x, int y) {
     // multiplications
     Rotation(previous_mouse_coord, current_mouse_coord);
     previous_mouse_coord = current_mouse_coord;
-    glutPostRedisplay();
+  } else if (right_button_down) {
+    Point2d current_mouse_coord;
+    current_mouse_coord.x = x;
+    current_mouse_coord.y = y;
+    zoom += ((previous_mouse_coord.y-y)/static_cast<float>(window_height));
+    previous_mouse_coord = current_mouse_coord;
+    cout << "zoom = " << zoom << endl;
   }
+  glutPostRedisplay();
 }
 
 void Keyboard(unsigned char key, int x, int y) {
