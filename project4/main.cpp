@@ -55,18 +55,33 @@ Vec3f crossProd(Vec3f a, Vec3f b) {
 */
 void displayMesh() {
   glEnable(GL_TEXTURE_3D);
-  // glBindTexture(GL_TEXTURE_3D, texture_ids[0]);
+  // for each polygon
   for (int i = 0; i < mesh.num_polygons(); ++i) {
+    glColor3f(0.0, 0.0, 0.0);
     Polygon x = mesh.polygon(i);
-    Material mx = mesh.material(mesh.polygon2material(i));
-    glBindTexture(GL_TEXTURE_3D, texture_ids[mx.texture_id()]);
-    glBegin(GL_POLYGON);
-    for (int j = 0; j < x._verts.size(); ++j) {
-      glTexCoord3d(x._tex_verts[j][0], x._tex_verts[j][1], x._tex_verts[j][2]);
-      glVertex3f(x._verts[j][0], x._verts[j][1], x._verts[j][2]);
+    bool has_mat = (mesh.polygon2material(i) != -1);
+    // cout << "poly2mat: " << mesh.polygon2material(i) << endl;
+    if (has_mat) {
+      Material mx = mesh.material(mesh.polygon2material(i));
+      glBindTexture(GL_TEXTURE_3D, texture_ids[mx.texture_id()]);
+      glBegin(GL_POLYGON);
+      // for each vertex of the polygon
+      for (int j = 0; j < x._verts.size(); ++j) {
+        glTexCoord3d(x._tex_verts[j][0], x._tex_verts[j][1],
+                                         x._tex_verts[j][2]);
+        glVertex3f(x._verts[j][0], x._verts[j][1], x._verts[j][2]);
+      }
+      glEnd();
+    } else {
+      glBegin(GL_POLYGON);
+      for (int j = 0; j < x._verts.size(); ++j) {
+        glVertex3f(x._verts[j][0], x._verts[j][1], x._verts[j][2]);
+      }
+      glEnd();
     }
-    glEnd();
 /*
+    // Polygon Normals
+    glColor3f(0.0, 1.0, 0.0);
     Vec3f n = x._verts[0];
     glBegin(GL_LINES);
     glColor3f(0.0f, 1.0f, 0.0f);
@@ -89,12 +104,15 @@ void Display() {
   glLoadIdentity();
   float maxD = (mesh.bb().max-mesh.bb().min).max();
   center = mesh.bb().center();
-  eye = center+(Vec3f::makeVec(1.0f*maxD, 1.0f*maxD, 1.0f*maxD)*zoom);
+  eye = center+(Vec3f::makeVec(0.0f, 0.0f, 1.2f*maxD)*zoom);
   gluLookAt(eye[0],    eye[1],    eye[2],
             center[0], center[1], center[2],
             0,         1,         0);
   // apply all transformations
+  glTranslatef(center[0], center[1], center[2]);
   glMultMatrixf(current_matrix);
+  center *= -1;
+  glTranslatef(center[0], center[1], center[2]);
 
   // TODO set up lighting, material properties and render mesh.
   // Be sure to call glEnable(GL_RESCALE_NORMAL) so your normals
@@ -105,7 +123,7 @@ void Display() {
   glLineWidth(4);
   DrawAxis();
   // glutWireCube(1);
-  glEnable(GL_LIGHTING);
+  // glEnable(GL_LIGHTING);
 
   displayMesh();
 
@@ -343,24 +361,19 @@ int main(int argc, char *argv[]) {
   glutDisplayFunc(Display);
 
   Init();
-
   if (string(argv[1]) == "-s") {
     cout << "Creat scene" << endl;
   } else {
     string filename(argv[1]);
     cout << filename << endl;
-
     // Detect whether to fix the light source(s) to the camera or the world
     scene_lighting = false;
     if (argc > 2 && string(argv[2]) == "-l") {
       scene_lighting = true;
     }
-
     // Parse the obj file, compute the normals, read the textures
-
     ParseObj(filename, mesh);
     mesh.compute_normals();
-
     texture_ids = new GLuint[mesh.num_materials()];
     glGenTextures(mesh.num_materials(), texture_ids);
 

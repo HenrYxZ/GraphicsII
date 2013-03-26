@@ -89,6 +89,8 @@ class Mesh {
 
   int num_vertices() const { return _vertices.size(); }
 
+  int num_tex_vertices() const { return _tex_vertices.size(); }
+
   void compute_normals();
 
  private:
