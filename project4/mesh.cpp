@@ -42,8 +42,8 @@ void Mesh::AddPolygon(const std::vector<int>& p, const std::vector<int>& pt) {
     // cout << "tex vertex at i: " << _tex_vertices.at(p[i]) << "\n" << endl;
   }
   // make normal
-  Vec3f a = n._verts[0] - n._verts[1];
-  Vec3f b = n._verts[0] - n._verts[2];
+  Vec3f a = n.verts[0] - n.verts[1];
+  Vec3f b = n.verts[0] - n.verts[2];
   n._normal = a.crossProduct(b);
   n._normal = n._normal.unit();
   _polygons.push_back(n);
@@ -54,4 +54,27 @@ void Mesh::AddPolygon(const std::vector<int>& p, const std::vector<int>& pt) {
 // Computes a normal for each vertex.
 void Mesh::compute_normals() {
   // TODO don't forget to normalize your normals!
+
+  for (int i = 0; i < _polygons.size(); i++) {
+    for (int j = 0; j < _polygons[i].verts.size(); j++) {
+      _polygons[i].verts[j].v_normal += _polygons[i].normal;
+    }
+  }
+  // normalize normals
+  Vec3f x;
+
+  for (int i = 0; i < _polygons.size(); i++) {
+    for (int j = 0; j < _polygons[i].verts.size(); j++) {
+      x = _polygons[i].verts[j].v_normals.unit();
+      _polygons[i].verts[j].v_normal = x;
+    }
+  }
 }
+
+
+
+
+
+
+
+
