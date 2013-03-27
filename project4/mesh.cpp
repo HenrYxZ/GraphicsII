@@ -12,7 +12,9 @@ Mesh::Mesh() {
 // This will be called by the obj parser
 void Mesh::AddVertex(const Vec3f& v) {
   // TODO
-  _vertices.push_back(v);
+  Vertex x;
+  x.location = v;
+  _vertices.push_back(x);
   // updates the bounding box
   _bb(v);
 }
@@ -33,19 +35,21 @@ void Mesh::AddPolygon(const std::vector<int>& p, const std::vector<int>& pt) {
   // TODO
   Polygon n;
   for (int i = 0; i < p.size(); i++) {
-    n._verts.push_back(_vertices.at(p[i]));
+    Vertex v;
+    v.location = _vertices.at(p[i]).location;
+    n.verts.push_back(v);
     if (pt[i] != -1)
-      n._tex_verts.push_back(_tex_vertices.at(pt[i]));
+      n.tex_verts.push_back(_tex_vertices.at(pt[i]));
     else
-      n._tex_verts.push_back(Vec3f::makeVec(0.0f, 0.0f, 0.0f));
+      n.tex_verts.push_back(Vec3f::makeVec(0.0f, 0.0f, 0.0f));
     // cout << "vertex at i: " << _vertices.at(p[i]) << endl;
     // cout << "tex vertex at i: " << _tex_vertices.at(p[i]) << "\n" << endl;
   }
   // make normal
-  Vec3f a = n.verts[0] - n.verts[1];
-  Vec3f b = n.verts[0] - n.verts[2];
-  n._normal = a.crossProduct(b);
-  n._normal = n._normal.unit();
+  Vec3f a = n.verts[0].location - n.verts[1].location;
+  Vec3f b = n.verts[0].location - n.verts[2].location;
+  n.normal = a.crossProduct(b);
+  n.normal = n.normal.unit();
   _polygons.push_back(n);
   // updates the poly2mat map
   _polygon2material.push_back(_cur_mtl);
@@ -65,7 +69,7 @@ void Mesh::compute_normals() {
 
   for (int i = 0; i < _polygons.size(); i++) {
     for (int j = 0; j < _polygons[i].verts.size(); j++) {
-      x = _polygons[i].verts[j].v_normals.unit();
+      x = _polygons[i].verts[j].v_normal.unit();
       _polygons[i].verts[j].v_normal = x;
     }
   }

@@ -57,7 +57,6 @@ void displayMesh() {
   glEnable(GL_TEXTURE_3D);
   // for each polygon
   for (int i = 0; i < mesh.num_polygons(); ++i) {
-    glColor3f(0.0, 0.0, 0.0);
     Polygon x = mesh.polygon(i);
     bool has_mat = (mesh.polygon2material(i) != -1);
     // cout << "poly2mat: " << mesh.polygon2material(i) << endl;
@@ -66,16 +65,20 @@ void displayMesh() {
       glBindTexture(GL_TEXTURE_3D, texture_ids[mx.texture_id()]);
       glBegin(GL_POLYGON);
       // for each vertex of the polygon
-      for (int j = 0; j < x._verts.size(); ++j) {
-        glTexCoord3d(x._tex_verts[j][0], x._tex_verts[j][1],
-                                         x._tex_verts[j][2]);
-        glVertex3f(x._verts[j][0], x._verts[j][1], x._verts[j][2]);
+      for (int j = 0; j < x.verts.size(); ++j) {
+        // glNormal3f();
+        glTexCoord3d(x.tex_verts[j][0], x.tex_verts[j][1],
+                                        x.tex_verts[j][2]);
+        glVertex3f(x.verts[j].location[0], x.verts[j].location[1],
+                                           x.verts[j].location[2]);
       }
       glEnd();
     } else {
       glBegin(GL_POLYGON);
-      for (int j = 0; j < x._verts.size(); ++j) {
-        glVertex3f(x._verts[j][0], x._verts[j][1], x._verts[j][2]);
+      for (int j = 0; j < x.verts.size(); ++j) {
+        // glNormal3f();
+        glVertex3f(x.verts[j].location[0], x.verts[j].location[1],
+                                           x.verts[j].location[2]);
       }
       glEnd();
     }
@@ -123,8 +126,19 @@ void Display() {
   glLineWidth(4);
   DrawAxis();
   // glutWireCube(1);
-  // glEnable(GL_LIGHTING);
 
+
+  // light for testing
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_COLOR_MATERIAL);
+  GLfloat position[] = {-150, 150, 300, 1};
+  glLightfv(GL_LIGHT0, GL_POSITION, position);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+  glColor3f(0, 0, 0);
   displayMesh();
 
   glFlush();
