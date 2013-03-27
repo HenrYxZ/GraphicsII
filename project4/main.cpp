@@ -66,7 +66,8 @@ void displayMesh() {
       glBegin(GL_POLYGON);
       // for each vertex of the polygon
       for (int j = 0; j < x.verts.size(); ++j) {
-        // glNormal3f();
+        glNormal3f(x.verts[j].v_normal[0], x.verts[j].v_normal[1],
+                                           x.verts[j].v_normal[2]);
         glTexCoord3d(x.tex_verts[j][0], x.tex_verts[j][1],
                                         x.tex_verts[j][2]);
         glVertex3f(x.verts[j].location[0], x.verts[j].location[1],
@@ -76,7 +77,8 @@ void displayMesh() {
     } else {
       glBegin(GL_POLYGON);
       for (int j = 0; j < x.verts.size(); ++j) {
-        // glNormal3f();
+        glNormal3f(x.verts[j].v_normal[0], x.verts[j].v_normal[1],
+                                           x.verts[j].v_normal[2]);
         glVertex3f(x.verts[j].location[0], x.verts[j].location[1],
                                            x.verts[j].location[2]);
       }
@@ -138,7 +140,7 @@ void Display() {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
-  glColor3f(0, 0, 0);
+  glColor3f(0.3, 0.0, 0.0);
   displayMesh();
 
   glFlush();
@@ -195,9 +197,6 @@ void printVector(Vec3f v, const char* name) {
 }
 
 void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
-  cout << "previous matrix" << endl;
-  PrintMatrix(current_matrix);
-  cout << endl;
   // calculation of p
   float x_p = static_cast<float>(previous_mouse_coord.x);
   x_p = 2*x_p/window_width - 1;
@@ -215,7 +214,6 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
     z_p = sqrt(1- pow(x_p, 2) - pow(y_p, 2));
   }
   Vec3f p = {x_p, y_p, z_p};
-  printVector(p, "p");
   // calculation of q
   float x_q = static_cast<float>(current_mouse_coord.x);
   x_q = 2*x_q/window_width - 1;
@@ -229,7 +227,6 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
     z_q = sqrt(1- pow(x_q, 2) - pow(y_q, 2));
   }
   Vec3f q = {x_q, y_q, z_q};
-  printVector(q, "q");
   // calculation of angle with unitary p and q
   float angle = acos(p.unit() * q.unit())*180.0/PI;
   // cout << "rotation of angle1 " << angle << endl;
@@ -240,8 +237,6 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   Vec3f origin = {0, 0, 0};
   p = p - origin;
   Vec3f n = p.crossProduct(q - origin);
-  // rotation by angle on axis n
-  cout << "rotation of angle " << angle << endl;
   // printVector(n, "normal");
 
   // store the this rotation with all previous rotations
@@ -249,9 +244,6 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   glRotatef(angle, n.x[0], n.x[1], n.x[2]);
   glMultMatrixf(current_matrix);
   glGetFloatv(GL_MODELVIEW_MATRIX, current_matrix);
-  cout << "current matrix" << endl;
-  PrintMatrix(current_matrix);
-  cout << "----------" << endl;
 }
 
 
@@ -277,7 +269,6 @@ void Init() {
   glMatrixMode(GL_MODELVIEW_MATRIX);
   glLoadIdentity();
   glGetFloatv(GL_MODELVIEW_MATRIX, current_matrix);
-  PrintMatrix(current_matrix);
 }
 
 void DrawAxis() {
@@ -338,7 +329,6 @@ void MouseMotion(int x, int y) {
     current_mouse_coord.y = y;
     zoom += ((previous_mouse_coord.y-y)/static_cast<float>(window_height));
     previous_mouse_coord = current_mouse_coord;
-    cout << "zoom = " << zoom << endl;
   }
   glutPostRedisplay();
 }
