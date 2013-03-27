@@ -42,19 +42,21 @@ bool right_button_down = false;
 GLfloat current_matrix[16];
 Vec3f center, eye;
 
-/*
- * we can still use this, I was just testing the method in vec.h
- * note that they have different function calls
-Vec3f crossProd(Vec3f a, Vec3f b) {
-  float x = a.x[1]*b.x[2] - a.x[2]*b.x[1];
-  float y = a.x[2]*b.x[0] - a.x[0]*b.x[2];
-  float z = a.x[0]*b.x[1] - a.x[1]*b.x[0];
-  Vec3f result = {x, y, z};
-  return result;
+void Light() {
+  // light for testing
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHT1);
+  glEnable(GL_COLOR_MATERIAL);
+  GLfloat position[] = {-150, 150, 300, 1};
+  glLightfv(GL_LIGHT0, GL_POSITION, position);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 }
-*/
+
 void displayMesh() {
-  glEnable(GL_TEXTURE_3D);
+  glEnable(GL_TEXTURE_2D);
   // for each polygon
   for (int i = 0; i < mesh.num_polygons(); ++i) {
     Polygon x = mesh.polygon(i);
@@ -62,7 +64,7 @@ void displayMesh() {
     // cout << "poly2mat: " << mesh.polygon2material(i) << endl;
     if (has_mat) {
       Material mx = mesh.material(mesh.polygon2material(i));
-      glBindTexture(GL_TEXTURE_3D, texture_ids[mx.texture_id()]);
+      glBindTexture(GL_TEXTURE_2D, texture_ids[mx.texture_id()-1]);
       glBegin(GL_POLYGON);
       // for each vertex of the polygon
       for (int j = 0; j < x.verts.size(); ++j) {
@@ -84,17 +86,6 @@ void displayMesh() {
       }
       glEnd();
     }
-/*
-    // Polygon Normals
-    glColor3f(0.0, 1.0, 0.0);
-    Vec3f n = x._verts[0];
-    glBegin(GL_LINES);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(n.x[0], n.x[1], n.x[2]);
-    n = n + x._normal;
-    glVertex3f(n.x[0], n.x[1], n.x[2]);
-    glEnd();
-*/
   }
 }
 
@@ -128,19 +119,8 @@ void Display() {
   glLineWidth(4);
   DrawAxis();
   // glutWireCube(1);
-
-
-  // light for testing
-  glShadeModel(GL_SMOOTH);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_COLOR_MATERIAL);
-  GLfloat position[] = {-150, 150, 300, 1};
-  glLightfv(GL_LIGHT0, GL_POSITION, position);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-
-  glColor3f(0.3, 0.0, 0.0);
+  Light();
+  glColor3f(1.0, 1.0, 1.0);
   displayMesh();
 
   glFlush();
@@ -205,8 +185,6 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
   float z_p;
   float root_p = (1- pow(x_p, 2) - pow(y_p, 2));
   if (root_p < 0) {
-    // z_p = sqrt(-1 * (1- pow(x_p, 2) - pow(y_p, 2) ) );
-
     // if the point is outside of the unit sphere, then the point lies
     // somewhere in the xy plane, so z = 0
     z_p = 0;
@@ -227,17 +205,17 @@ void Rotation(Point2d previous_mouse_coord, Point2d current_mouse_coord) {
     z_q = sqrt(1- pow(x_q, 2) - pow(y_q, 2));
   }
   Vec3f q = {x_q, y_q, z_q};
+
   // calculation of angle with unitary p and q
   float angle = acos(p.unit() * q.unit())*180.0/PI;
-  // cout << "rotation of angle1 " << angle << endl;
   // if for some reason the angle comes out as NaN, change it to zero
   if (angle != angle)
     angle = 0;
+
   // calculation of normal
   Vec3f origin = {0, 0, 0};
   p = p - origin;
   Vec3f n = p.crossProduct(q - origin);
-  // printVector(n, "normal");
 
   // store the this rotation with all previous rotations
   glLoadIdentity();
