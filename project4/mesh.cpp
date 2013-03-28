@@ -35,9 +35,7 @@ void Mesh::AddPolygon(const std::vector<int>& p, const std::vector<int>& pt) {
   // TODO
   Polygon n;
   for (int i = 0; i < p.size(); i++) {
-    Vertex v;
-    v.location = _vertices.at(p[i]).location;
-    n.verts.push_back(v);
+    n.verts.push_back(_vertices.at(p[i]));
     if (pt[i] != -1)
       n.tex_verts.push_back(_tex_vertices.at(pt[i]));
     else
