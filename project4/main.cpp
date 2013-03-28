@@ -47,12 +47,25 @@ void Light() {
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-  glEnable(GL_COLOR_MATERIAL);
+  // glEnable(GL_COLOR_MATERIAL);
   GLfloat position[] = {-150, 150, 300, 1};
   glLightfv(GL_LIGHT0, GL_POSITION, position);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+  // glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+}
+
+void Light(Material m) {
+  Vec3f ambient = m.ambient();
+  Vec3f diffuse = m.diffuse();
+  Vec3f specular = m.specular();
+  float a[] = {ambient.x[0], ambient.x[1], ambient.x[2], 1};
+  float d[] = {diffuse.x[0], diffuse.x[1], diffuse.x[2], 1};
+  float s[] = {specular.x[0], specular.x[1], specular.x[2], 1};
+  float shininess = m.specular_coeff();
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, a);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, d);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, s);
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 }
 
 void displayMesh() {
@@ -61,10 +74,11 @@ void displayMesh() {
   for (int i = 0; i < mesh.num_polygons(); ++i) {
     Polygon x = mesh.polygon(i);
     bool has_mat = (mesh.polygon2material(i) != -1);
-    // cout << "poly2mat: " << mesh.polygon2material(i) << endl;
     if (has_mat) {
       Material mx = mesh.material(mesh.polygon2material(i));
+      Light(mx);
       glBindTexture(GL_TEXTURE_2D, texture_ids[mx.texture_id()-1]);
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
       glBegin(GL_POLYGON);
       // for each vertex of the polygon
       for (int j = 0; j < x.verts.size(); ++j) {
@@ -107,8 +121,8 @@ void Display() {
   // apply all transformations
   glTranslatef(center[0], center[1], center[2]);
   glMultMatrixf(current_matrix);
-  center *= -1;
-  glTranslatef(center[0], center[1], center[2]);
+  // center *= -1;
+  // glTranslatef(center[0], center[1], center[2]);
 
   // TODO set up lighting, material properties and render mesh.
   // Be sure to call glEnable(GL_RESCALE_NORMAL) so your normals
@@ -119,8 +133,12 @@ void Display() {
   glLineWidth(4);
   DrawAxis();
   // glutWireCube(1);
-  Light();
+
+  center *= -1;
+  glTranslatef(center[0], center[1], center[2]);
+
   glColor3f(1.0, 1.0, 1.0);
+  Light();
   displayMesh();
 
   glFlush();
