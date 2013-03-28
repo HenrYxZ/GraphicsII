@@ -48,7 +48,7 @@ void Light() {
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
   // glEnable(GL_COLOR_MATERIAL);
-  GLfloat position[] = {-150, 150, 300, 1};
+  GLfloat position[] = {0, 100, 300, 1};
   glLightfv(GL_LIGHT0, GL_POSITION, position);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   // glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -127,13 +127,13 @@ void Display() {
   // TODO set up lighting, material properties and render mesh.
   // Be sure to call glEnable(GL_RESCALE_NORMAL) so your normals
   // remain normalized throughout transformations.
+  glEnable(GL_RESCALE_NORMAL);
 
   // You can leave the axis in if you like.
   glDisable(GL_LIGHTING);
   glLineWidth(4);
   DrawAxis();
   // glutWireCube(1);
-
   center *= -1;
   glTranslatef(center[0], center[1], center[2]);
 
@@ -324,6 +324,8 @@ void MouseMotion(int x, int y) {
     current_mouse_coord.x = x;
     current_mouse_coord.y = y;
     zoom += ((previous_mouse_coord.y-y)/static_cast<float>(window_height));
+    if (zoom < 0.01)
+      zoom = 0.01;
     previous_mouse_coord = current_mouse_coord;
   }
   glutPostRedisplay();
