@@ -365,6 +365,21 @@ int main(int argc, char *argv[]) {
   Init();
   if (string(argv[1]) == "-s") {
     cout << "Creat scene" << endl;
+        scene_lighting = false;
+    if (argc > 2 && string(argv[2]) == "-l") {
+      scene_lighting = true;
+    }
+    // Parse the obj file, compute the normals, read the textures
+    string filename = "obj-data/altair.obj";
+    ParseObj(filename, mesh);
+    mesh.compute_normals();
+    texture_ids = new GLuint[mesh.num_materials()];
+    glGenTextures(mesh.num_materials(), texture_ids);
+
+    for (int i = 0; i < mesh.num_materials(); ++i) {
+      Material& material = mesh.material(i);
+      material.LoadTexture(texture_ids[i]);
+    }
   } else {
     string filename(argv[1]);
     cout << filename << endl;
