@@ -82,22 +82,23 @@ void displayMesh() {
       glBegin(GL_POLYGON);
       // for each vertex of the polygon
       for (int j = 0; j < x.verts.size(); ++j) {
-        // Vertex v = *x.verts[j];
-        glNormal3f((*x.verts[j]).v_normal[0], (*x.verts[j]).v_normal[1],
-                                            (*x.verts[j]).v_normal[2]);
+        Vertex v = mesh.vertex(x.verts[j]);
+        glNormal3f(v.v_normal[0], v.v_normal[1],
+                                  v.v_normal[2]);
         glTexCoord3d(x.tex_verts[j][0], x.tex_verts[j][1],
                                         x.tex_verts[j][2]);
-        glVertex3f((*x.verts[j]).location[0], (*x.verts[j]).location[1],
-                                           (*x.verts[j]).location[2]);
+        glVertex3f(v.location[0], v.location[1],
+                                  v.location[2]);
       }
       glEnd();
     } else {
       glBegin(GL_POLYGON);
       for (int j = 0; j < x.verts.size(); ++j) {
-        glNormal3f((*x.verts[j]).v_normal[0], (*x.verts[j]).v_normal[1],
-                                            (*x.verts[j]).v_normal[2]);
-        glVertex3f((*x.verts[j]).location[0], (*x.verts[j]).location[1],
-                                           (*x.verts[j]).location[2]);
+        Vertex v = mesh.vertex(x.verts[j]);
+        glNormal3f(v.v_normal[0], v.v_normal[1],
+                                  v.v_normal[2]);
+        glVertex3f(v.location[0], v.location[1],
+                                  v.location[2]);
       }
       glEnd();
     }
