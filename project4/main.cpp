@@ -82,25 +82,43 @@ void displayMesh() {
       glBegin(GL_POLYGON);
       // for each vertex of the polygon
       for (int j = 0; j < x.verts.size(); ++j) {
-        glNormal3f(x.verts[j].v_normal[0], x.verts[j].v_normal[1],
-                                           x.verts[j].v_normal[2]);
+        // Vertex v = *x.verts[j];
+        glNormal3f((*x.verts[j]).v_normal[0], (*x.verts[j]).v_normal[1],
+                                            (*x.verts[j]).v_normal[2]);
         glTexCoord3d(x.tex_verts[j][0], x.tex_verts[j][1],
                                         x.tex_verts[j][2]);
-        glVertex3f(x.verts[j].location[0], x.verts[j].location[1],
-                                           x.verts[j].location[2]);
+        glVertex3f((*x.verts[j]).location[0], (*x.verts[j]).location[1],
+                                           (*x.verts[j]).location[2]);
       }
       glEnd();
     } else {
       glBegin(GL_POLYGON);
       for (int j = 0; j < x.verts.size(); ++j) {
-        glNormal3f(x.verts[j].v_normal[0], x.verts[j].v_normal[1],
-                                           x.verts[j].v_normal[2]);
-        glVertex3f(x.verts[j].location[0], x.verts[j].location[1],
-                                           x.verts[j].location[2]);
+        glNormal3f((*x.verts[j]).v_normal[0], (*x.verts[j]).v_normal[1],
+                                            (*x.verts[j]).v_normal[2]);
+        glVertex3f((*x.verts[j]).location[0], (*x.verts[j]).location[1],
+                                           (*x.verts[j]).location[2]);
       }
       glEnd();
     }
   }
+/*
+  // display vec normals
+  glEnable(GL_COLOR_MATERIAL);
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+  glColor3f(0.0, 1.0, 0.0);
+  for (int i = 0; i < mesh.num_vertices(); ++i) {
+    Vec3f a = mesh.vec_loc(i);
+    Vec3f b = mesh.vec_norm(i);
+    a += b;
+    b *= 2;
+    glBegin(GL_LINES);
+    glVertex3f(a[0], a[1], a[2]);
+    glVertex3f(a[0]+b[0], a[1]+b[1], a[2]+b[2]);
+    glEnd();
+  }
+  glDisable(GL_COLOR_MATERIAL);
+*/
 }
 
 void Display() {

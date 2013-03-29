@@ -14,7 +14,7 @@ struct Vertex {
 };
 
 struct Polygon {
-  vector<Vertex> verts;
+  vector<Vertex*> verts;
   vector<Vec3f> tex_verts;
   Vec3f normal;
 };
@@ -87,6 +87,10 @@ class Mesh {
   int num_polygons() const { return _polygons.size(); }
 
   int num_vertices() const { return _vertices.size(); }
+
+  Vec3f vec_loc(int i) const { return _vertices[i].location; }
+
+  Vec3f vec_norm(int i) const { return _vertices[i].v_normal; }
 
   int num_tex_vertices() const { return _tex_vertices.size(); }
 
