@@ -42,19 +42,16 @@ bool right_button_down = false;
 GLfloat current_matrix[16];
 Vec3f center, eye;
 
-void Light() {
-  // light for testing
+void Light(float x, float y, float z) {
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
-  // glEnable(GL_COLOR_MATERIAL);
-  GLfloat position[] = {0, 100, 300, 1};
+  GLfloat position[] = {x, y, z, 1};
   glLightfv(GL_LIGHT0, GL_POSITION, position);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  // glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 }
 
-void Light(Material m) {
+void matProps(Material m) {
   Vec3f ambient = m.ambient();
   Vec3f diffuse = m.diffuse();
   Vec3f specular = m.specular();
@@ -76,7 +73,7 @@ void displayMesh() {
     bool has_mat = (mesh.polygon2material(i) != -1);
     if (has_mat) {
       Material mx = mesh.material(mesh.polygon2material(i));
-      Light(mx);
+      matProps(mx);
       glBindTexture(GL_TEXTURE_2D, texture_ids[mx.texture_id()-1]);
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
       glBegin(GL_POLYGON);
@@ -103,23 +100,6 @@ void displayMesh() {
       glEnd();
     }
   }
-/*
-  // display vec normals
-  glEnable(GL_COLOR_MATERIAL);
-  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-  glColor3f(0.0, 1.0, 0.0);
-  for (int i = 0; i < mesh.num_vertices(); ++i) {
-    Vec3f a = mesh.vec_loc(i);
-    Vec3f b = mesh.vec_norm(i);
-    a += b;
-    b *= 2;
-    glBegin(GL_LINES);
-    glVertex3f(a[0], a[1], a[2]);
-    glVertex3f(a[0]+b[0], a[1]+b[1], a[2]+b[2]);
-    glEnd();
-  }
-  glDisable(GL_COLOR_MATERIAL);
-*/
 }
 
 void Display() {
@@ -137,11 +117,6 @@ void Display() {
   gluLookAt(eye[0],    eye[1],    eye[2],
             center[0], center[1], center[2],
             0,         1,         0);
-  // apply all transformations
-  glTranslatef(center[0], center[1], center[2]);
-  glMultMatrixf(current_matrix);
-  // center *= -1;
-  // glTranslatef(center[0], center[1], center[2]);
 
   // TODO set up lighting, material properties and render mesh.
   // Be sure to call glEnable(GL_RESCALE_NORMAL) so your normals
@@ -151,13 +126,19 @@ void Display() {
   // You can leave the axis in if you like.
   glDisable(GL_LIGHTING);
   glLineWidth(4);
-  DrawAxis();
+  // DrawAxis();
   // glutWireCube(1);
-  center *= -1;
-  glTranslatef(center[0], center[1], center[2]);
 
   glColor3f(1.0, 1.0, 1.0);
-  Light();
+  if (!scene_lighting)
+    Light(eye[0], eye[1], eye[2]);
+  // apply transformations
+  glTranslatef(center[0], center[1], center[2]);
+  glMultMatrixf(current_matrix);
+  center *= -1;
+  glTranslatef(center[0], center[1], center[2]);
+  if (scene_lighting)
+    Light(0, 150, 300);
   displayMesh();
 
   glFlush();
