@@ -19,7 +19,7 @@ void main()
   float outer_R = torusInfo[0];
   float inner_R = torusInfo[1];
 
-  normalMapTexCoord = vec2(parametric[0], parametric[1]);  // XXX fix me
+  normalMapTexCoord = vec2(-6.0*parametric[0], 2.0*parametric[1]);
 
   float theta = parametric[0];
   float phi = parametric[1];
