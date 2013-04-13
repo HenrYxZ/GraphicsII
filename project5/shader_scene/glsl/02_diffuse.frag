@@ -19,5 +19,7 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  vec3 l = normalize(lightDirection);
+  vec4 diffuse_color = mod(LMd, l[2])*max(l[2], 0);
+  gl_FragColor = diffuse_color + LMa;  // XXX fix me
 }
