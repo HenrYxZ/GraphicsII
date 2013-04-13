@@ -18,20 +18,18 @@ void main()
 
   float outer_R = torusInfo[0];
   float inner_R = torusInfo[1];
-  float a = (outer_R - inner_R) / 2;
-  float c = outer_R - a;
 
   normalMapTexCoord = vec2(parametric[0], parametric[1]);  // XXX fix me
 
   float theta = parametric[0];
   float phi = parametric[1];
 
-  float x = (c+(a*cos(phi*pi2)))*cos(theta*pi2);
-  float y = (c+(a*cos(phi*pi2)))*sin(theta*pi2);
-  float z = a*sin(phi*pi2);
-  gl_Position = gl_ModelViewProjectionMatrix * vec4(x, y, z, 1);  // XXX fix me
-  eyeDirection = eyePosition - gl_Position;  // XXX fix me
-  lightDirection = lightPosition - gl_Position;  // XXX fix me
+  float x = (outer_R+(inner_R*cos(phi*pi2)))*cos(theta*pi2);
+  float y = (outer_R+(inner_R*cos(phi*pi2)))*sin(theta*pi2);
+  float z = inner_R*sin(phi*pi2);
+  gl_Position = gl_ModelViewProjectionMatrix * vec4(x, y, z, 1);
+  eyeDirection = eyePosition - gl_Position;
+  lightDirection = lightPosition - gl_Position;
   halfAngle = vec3(0);  // XXX fix me
   c0 = vec3(0);  // XXX fix me
   c1 = vec3(0);  // XXX fix me
