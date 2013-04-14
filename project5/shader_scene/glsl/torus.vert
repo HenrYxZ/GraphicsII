@@ -28,12 +28,12 @@ void main()
   float y = (outer_R+(inner_R*cos(phi*pi2)))*sin(theta*pi2);
   float z = inner_R*sin(phi*pi2);
   gl_Position = gl_ModelViewProjectionMatrix * vec4(x, y, z, 1);
-  eyeDirection = normalize(vec3(eyePosition[0] - gl_Position[0],
-                                eyePosition[1] - gl_Position[1],
-                                eyePosition[2] - gl_Position[2]));
-  lightDirection = vec3(lightPosition[0] - gl_Position[0],
-                        lightPosition[1] - gl_Position[1],
-                        lightPosition[2] - gl_Position[2]);  // object-space
+  eyeDirection = normalize(vec3(eyePosition[0] - x,
+                                eyePosition[1] - y,
+                                eyePosition[2] - z));
+  lightDirection = vec3(lightPosition[0] - x,
+                        lightPosition[1] - y,
+                        lightPosition[2] - z);  // object-space
   halfAngle = (lightDirection + eyeDirection) / length(lightDirection + eyeDirection);  // XXX fix me
   c0 = vec3(0);  // XXX fix me
   c1 = vec3(0);  // XXX fix me
