@@ -19,7 +19,7 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  vec3 sn = (0.0, 0.0, 1.0);
+  vec3 sn = vec3(0.0, 0.0, 1.0);
   mat3 M = mat3(c0,c1,c2);
   vec3 e = M*eyeDirection;  // view vector in surface space
   vec3 r = reflect(e, sn);
