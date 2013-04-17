@@ -19,5 +19,11 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  vec3 normap = (texture2D(normalMap, normalMapTexCoord) - 0.5)*2.0;
+  mat3 M = mat3(c0,c1,c2);
+  vec3 e = M*eyeDirection;  // view vector in surface space
+  vec3 r = reflect(e, normap);
+  r = r*M;
+  r = objectToWorld*r;  // problem converting to world space
+  gl_FragColor = textureCube(envmap, r);
 }
