@@ -21,5 +21,5 @@ void main()
 {
   vec3 l = normalize(lightDirection);
   vec4 diffuse_color = LMd*max(l[2], 0.0);
-  gl_FragColor = mod(diffuse_color, l[2]) + LMa;  // XXX fix me
+  gl_FragColor = mod(diffuse_color, l[2]) + LMa;
 }
