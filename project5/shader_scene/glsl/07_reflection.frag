@@ -19,5 +19,10 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  vec3 sn = (0, 0, 1);
+  vec3 e = normalize(eyeDirection);
+  vec3 r = reflect(eyeDirection, sn);
+  mat3 m = mat3(c0,c1,c2);
+
+  gl_FragColor = textureCube(envmap, m*r);
 }
