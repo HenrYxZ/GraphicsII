@@ -19,5 +19,13 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  vec3 l = normalize(lightDirection);
+  vec3 normap = (texture2D(normalMap, normalMapTexCoord) - 0.5)*2.0;
+  float lnorm = dot(normap, l);
+  vec4 diffuse_color = mod(LMd*max(lnorm, 0.0), lnorm);
+  vec3 hA = normalize(halfAngle);
+  float hAnorm = dot(normap, hA);
+  vec4 spec_color = LMs*max(pow(hAnorm, shininess), 0);
+  vec4 decal_color = texture2D(decal, normalMapTexCoord);
+  gl_FragColor = (diffuse_color + spec_color + LMa) * decal_color;
 }

@@ -21,6 +21,5 @@ void main()
 {
   vec3 hA = normalize(halfAngle);
   vec4 spec_color = LMs*max(pow(hA[2], shininess), 0);
-  // **something about diffuse contribution**
-  gl_FragColor = spec_color;  // XXX fix me
+  gl_FragColor = spec_color;
 }

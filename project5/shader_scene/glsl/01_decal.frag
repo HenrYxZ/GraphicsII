@@ -19,5 +19,5 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = texture2D(decal, normalMapTexCoord);  // XXX fix me
+  gl_FragColor = texture2D(decal, normalMapTexCoord);
 }
