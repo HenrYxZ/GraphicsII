@@ -19,10 +19,11 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  vec3 sn = (0, 0, 1);
-  vec3 e = normalize(eyeDirection);
-  vec3 r = reflect(eyeDirection, sn);
-  mat3 m = mat3(c0,c1,c2);
-
-  gl_FragColor = textureCube(envmap, m*r);
+  vec3 sn = (0.0, 0.0, 1.0);
+  mat3 M = mat3(c0,c1,c2);
+  vec3 e = M*eyeDirection;  // view vector in surface space
+  vec3 r = reflect(e, sn);
+  r = r*M;
+  r = objectToWorld*r;
+  gl_FragColor = textureCube(envmap, r);
 }

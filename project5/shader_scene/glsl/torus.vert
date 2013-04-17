@@ -34,7 +34,7 @@ void main()
   lightDirection = vec3(lightPosition[0] - x,
                         lightPosition[1] - y,
                         lightPosition[2] - z);  // object-space
-  halfAngle = (lightDirection + eyeDirection) / length(lightDirection + eyeDirection);  // XXX fix me
+  halfAngle = (lightDirection + eyeDirection) / length(lightDirection + eyeDirection);
   c0 = vec3(0);  // XXX fix me
   c1 = vec3(0);  // XXX fix me
   c2 = vec3(0);  // XXX fix me
@@ -52,8 +52,12 @@ void main()
   float dvz = pi2*inner_R*cos(phi*pi2);
 
   vec3 tangent = normalize(vec3(dux, duy, duz));
-  vec3 normal = cross(tangent, normalize(vec3(dvx, dvy, dvz)));
-  vec3 binormal = cross(normal, tangent);
+  vec3 normal = normalize(cross(tangent, normalize(vec3(dvx, dvy, dvz))));
+  vec3 binormal = normalize(cross(normal, tangent));
+
+  c0 = tangent;
+  c1 = binormal;
+  c2 = normal;
 
   mat3 obj_to_surf = inverse(mat3(tangent, binormal, normal));
 
