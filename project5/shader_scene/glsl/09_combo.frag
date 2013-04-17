@@ -35,6 +35,6 @@ void main()
   vec3 e = eyeDirection*M;  // view vector in surface space
   vec3 r = reflect(e, normap);
   r = M*r;
-  r = (objectToWorld*r)*-1.0;  // problem converting to world space
+  r = (objectToWorld*r)*-1.0;
   gl_FragColor = (diffuse_color*0.5) + (spec_color*0.5) + (textureCube(envmap, r)*0.6);
 }
