@@ -21,7 +21,6 @@ void main()
 {
   vec3 l = normalize(lightDirection);
   vec3 normap = (texture2D(normalMap, normalMapTexCoord) - 0.5)*2.0;
-  vec3 heightmap = texture2D(heightField, normalMapTexCoord);
   float lnorm = dot(normap, l);
   vec4 diffuse_color = mod(LMd*max(lnorm, 0.0), lnorm);
   gl_FragColor = diffuse_color + LMa;
