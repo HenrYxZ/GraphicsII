@@ -19,5 +19,10 @@ varying vec3 c0, c1, c2;
 
 void main()
 {
-  gl_FragColor = vec4(1,0,0,1);  // XXX fix me
+  vec3 l = normalize(lightDirection);
+  vec3 normap = (texture2D(normalMap, normalMapTexCoord) - 0.5)*2.0;
+  vec3 heightmap = texture2D(heightField, normalMapTexCoord);
+  float lnorm = dot(normap, l);
+  vec4 diffuse_color = mod(LMd*max(lnorm, 0.0), lnorm);
+  gl_FragColor = diffuse_color + LMa;
 }
