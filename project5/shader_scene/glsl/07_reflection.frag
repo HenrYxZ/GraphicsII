@@ -21,9 +21,9 @@ void main()
 {
   vec3 sn = vec3(0.0, 0.0, 1.0);
   mat3 M = mat3(c0,c1,c2);
-  vec3 e = M*eyeDirection;  // view vector in surface space
+  vec3 e = eyeDirection*M;  // view vector in surface space
   vec3 r = reflect(e, sn);
-  r = r*M;
-  r = objectToWorld*r;
-  gl_FragColor = textureCube(envmap, r);
+  r = M*r;                  // reflected view vector in object space
+  r = normalize(objectToWorld*r);
+  gl_FragColor = textureCube(envmap, r*-1.0);
 }

@@ -21,9 +21,9 @@ void main()
 {
   vec3 normap = (texture2D(normalMap, normalMapTexCoord) - 0.5)*2.0;
   mat3 M = mat3(c0,c1,c2);
-  vec3 e = M*eyeDirection;  // view vector in surface space
+  vec3 e = eyeDirection*M;  // view vector in surface space
   vec3 r = reflect(e, normap);
-  r = r*M;
+  r = M*r;
   r = objectToWorld*r;  // problem converting to world space
-  gl_FragColor = textureCube(envmap, r);
+  gl_FragColor = textureCube(envmap, r*-1.0);
 }
