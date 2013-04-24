@@ -39,6 +39,20 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
   // 		.
   // 		.
   // }
+  Vec3d color;
+  color = ke(i) + prod(ka(a), scene.ambient() );
+  for (vector<Light*>::const_iterator litr = scene->beginLights();
+      litr != scene->endLights();
+      ++litr )
+  {
+    Light* pLight = *litr;
+    //Vec3d normal = ;
+    //Vec3d l = pLight.getDirection(i. "position here");
+    //Vec3d viewer = ;
+    //Vec3d r = ;
+    //color += 
+  }  
+    
 	
 
   return kd(i);
