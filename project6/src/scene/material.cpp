@@ -29,33 +29,43 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
   // When you're iterating through the lights,
   // you'll want to use code that looks something
   // like this:
-  //
-  // for ( vector<Light*>::const_iterator litr = scene->beginLights(); 
-  // 		litr != scene->endLights(); 
-  // 		++litr )
-  // {
-  // 		Light* pLight = *litr;
-  // 		.
-  // 		.
-  // 		.
-  // }
+
+  Vec3d P = r.at(i.t);  // world-coord intersection point
+  Vec3d normal = i.N;
+  normal.normalize();
+  Vec3d l;  // Light direction vector
+  Vec3d diffuse_factor;
+  Vec3d spec_factor;
+  Vec3d half_angle;  // for Blinn specular
+  Vec3d viewer = r.getDirection();
+  viewer.normalize();
+  //Vec3d reflec;
+  Vec3d Lcol;  // individual light color
   Vec3d color;
-  color = ke(i) + prod(ka(a), scene.ambient() );
+  color = ke(i) + prod(ka(i), scene->ambient() );
   for (vector<Light*>::const_iterator litr = scene->beginLights();
       litr != scene->endLights();
       ++litr )
   {
     Light* pLight = *litr;
-    //Vec3d normal = ;
-    //Vec3d l = pLight.getDirection(i. "position here");
-    //Vec3d viewer = ;
-    //Vec3d r = ;
-    //color += 
+    Lcol = pLight->getColor(P);
+    l = pLight->getDirection(P);
+    l.normalize();
+    diffuse_factor = kd(i) * max(0.0, normal*l);
+    // --Phong specular--
+    // reflec = (2*(l*normal)*normal) - l;
+    // reflec.normalize();
+    // spec_factor = ks(i) * max(0.0, pow(viewer*reflec, shininess(i)));
+    // --Blinn specular--
+    half_angle = (l+viewer) / (l+viewer).length();
+    half_angle.normalize();
+    spec_factor = ks(i) * max(0.0, pow(normal*half_angle, shininess(i)));
+    color += prod(Lcol, (diffuse_factor + spec_factor))
+               *min(1.0, pLight->distanceAttenuation(P));
   }  
     
-	
 
-  return kd(i);
+  return color;
 
 }
 
