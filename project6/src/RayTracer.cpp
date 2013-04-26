@@ -85,7 +85,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     //Vec3d refraction = traceRay(RefrRay, Vec3d(1.0,1.0,1.0), depth);
 
 
-    return m.shade(scene, r, i) + reflection;// + refraction;
+    return m.shade(scene, r, i) + prod(m.kr(i), reflection);// + refraction;
 
 	
   } else {
