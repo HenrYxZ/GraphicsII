@@ -71,15 +71,23 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     const Material& m = i.getMaterial();
 
     Vec3d iPoint = r.at(i.t);
-    Vec3d reflecDir = (2*(r.getDirection()*i.N)*i.N) - r.getDirection();
+    Vec3d reflecDir = -1*((2*(r.getDirection()*i.N)*i.N) - r.getDirection());
     ray ReflRay (iPoint, reflecDir, ray::REFLECTION);
-
-    //Vec3d refractDir = ;
-
+/*
+    double IofR = m.index(i);  // the index of refraction
+    double cos_i = i.N*r.getDirection();
+    double cos_t = sqrt(1 - IofR*IofR*(1 - cos_i*cos_i));
+    
+    Vec3d refractDir = (IofR*cos_i - cos_t)*i.N - IofR*r.getDirection();
+    ray RefrRay (iPoint, refractDir, ray::REFRACTION);
+*/
     Vec3d reflection = traceRay(ReflRay, Vec3d(1.0,1.0,1.0), depth);
     //Vec3d refraction = traceRay(RefrRay, Vec3d(1.0,1.0,1.0), depth);
 
-    return m.shade(scene, r, i) + reflection;// + refraction;
+    Vec3d retv = m.shade(scene, r, i) + reflection;// + refraction;
+    //retv.normalize();
+
+    return retv;
 
 	
   } else {
