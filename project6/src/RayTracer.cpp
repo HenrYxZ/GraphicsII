@@ -47,6 +47,12 @@ Vec3d RayTracer::trace( double x, double y )
 // (or places called from here) to handle reflection, refraction, etc etc.
 Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 {
+
+  if (depth == 5)
+    return Vec3d( 0.0, 0.0, 0.0 );
+
+  ++depth;
+
   isect i;
 
   if( scene->intersect( r, i ) ) {
@@ -61,9 +67,19 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     // more steps: add in the contributions from reflected and refracted
     // rays.
 
+
     const Material& m = i.getMaterial();
 
-    return m.shade(scene, r, i);
+    Vec3d iPoint = r.at(i.t);
+    Vec3d reflecDir = (2*(r.getDirection()*i.N)*i.N) - r.getDirection();
+    ray ReflRay (iPoint, reflecDir, ray::REFLECTION);
+
+    //Vec3d refractDir = ;
+
+    Vec3d reflection = traceRay(ReflRay, Vec3d(1.0,1.0,1.0), depth);
+    //Vec3d refraction = traceRay(RefrRay, Vec3d(1.0,1.0,1.0), depth);
+
+    return m.shade(scene, r, i) + reflection;// + refraction;
 
 	
   } else {
