@@ -70,22 +70,34 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 
     const Material& m = i.getMaterial();
 
-    Vec3d iPoint = r.at(i.t);
-    Vec3d reflecDir = -1*((2*(r.getDirection()*i.N)*i.N) - r.getDirection());
-    ray ReflRay (iPoint, reflecDir, ray::REFLECTION);
-/*
-    double IofR = 1.0 / m.index(i);  // the index of refraction
-    double cos_i = i.N*r.getDirection();
-    double cos_t = sqrt(1 - IofR*IofR*(1 - cos_i*cos_i));
-    
-    Vec3d refractDir = (IofR*cos_i - cos_t)*i.N - IofR*r.getDirection();
-    ray RefrRay (iPoint, refractDir, ray::REFRACTION);
-*/
-    Vec3d reflection = traceRay(ReflRay, Vec3d(1.0,1.0,1.0), depth);
-    //Vec3d refraction = traceRay(RefrRay, Vec3d(1.0,1.0,1.0), depth);
+    Vec3d iPoint = r.at(i.t);  // point of intersection
 
+    // --Reflection--
+    Vec3d reflection = Vec3d(0.0,0.0,0.0);
+    if (m.kr(i) != Vec3d(0.0,0.0,0.0)) {
+      Vec3d reflecDir = -1*((2*(r.getDirection()*i.N)*i.N) - r.getDirection());
+      ray ReflRay (iPoint, reflecDir, ray::REFLECTION);
+      reflection = traceRay(ReflRay, Vec3d(1.0,1.0,1.0), depth);
+    }
 
-    return m.shade(scene, r, i) + prod(m.kr(i), reflection);// + refraction;
+    // --Refraction--
+    Vec3d refraction = Vec3d(0.0,0.0,0.0);
+    if (m.kt(i) != Vec3d(0.0,0.0,0.0)) {
+      double IofR = m.index(i);  // the index of refraction
+      double cos_i = i.N*r.getDirection();
+      double angleBtwn = acos(cos_i);
+      if ((angleBtwn > 1.5707) | (angleBtwn < -1.5707))
+        cos_i *= -1;
+      double cos_t = 1.0 - IofR*IofR*(1.0 - cos_i*cos_i);
+
+      if (cos_t >= 0.0) {
+        Vec3d refractDir = (IofR*cos_i - sqrt(cos_t))*i.N + IofR*r.getDirection();
+        ray RefrRay (iPoint, refractDir, ray::REFRACTION);
+        refraction = traceRay(RefrRay, Vec3d(1.0,1.0,1.0), depth);
+      }
+    }
+
+    return m.shade(scene, r, i) + prod(m.kr(i), reflection) + prod(m.kt(i), refraction);
 
 	
   } else {
