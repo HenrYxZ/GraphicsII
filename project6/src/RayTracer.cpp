@@ -72,13 +72,36 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 
     Vec3d iPoint = r.at(i.t);  // point of intersection
 
+    // --Shadows--
+    //for (vector<Light*>::const_iterator litr = scene->beginLights();
+    //  litr != scene->endLights(); ++litr )
+    //{
+    vector<Light*>::const_iterator litr = scene->beginLights();
+      Light* pLight = *litr;
+      Vec3d shadowDir = pLight->getDirection(iPoint);
+      isect aux;
+      ray shadow_ray (iPoint,shadowDir,ray::SHADOW);
+      if(scene->intersect(shadow_ray, aux))
+        return Vec3d(0.0,0.0,0.0);
+    //}
+
     // --Reflection--
     Vec3d reflection = Vec3d(0.0,0.0,0.0);
     if (m.kr(i) != Vec3d(0.0,0.0,0.0)) {
-      Vec3d reflecDir = -1*((2*(r.getDirection()*i.N)*i.N) - r.getDirection());
+      Vec3d reflecDir = 2*((-1*r.getDirection()*i.N)*i.N) + r.getDirection();
+      reflecDir.normalize();
       ray ReflRay (iPoint, reflecDir, ray::REFLECTION);
       reflection = traceRay(ReflRay, Vec3d(1.0,1.0,1.0), depth);
+      
+      // use threshold
+      for(int i=0; i < 3; i++){
+        if(reflection[i] > thresh[i]){
+          reflection[i] = 1;
+        }
+      }
+        
     }
+    //reflection = Vec3d(0.0,0.0,0.0);
 
     // --Refraction--
     Vec3d refraction = Vec3d(0.0,0.0,0.0);
@@ -87,15 +110,25 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
       double cos_i = i.N*r.getDirection();
       double angleBtwn = acos(cos_i);
       if ((angleBtwn > 1.5707) | (angleBtwn < -1.5707))
-        cos_i *= -1;
+       cos_i *= -1;
       double cos_t = 1.0 - IofR*IofR*(1.0 - cos_i*cos_i);
 
-      if (cos_t >= 0.0) {
+      if (cos_t > 0.0) {
         Vec3d refractDir = (IofR*cos_i - sqrt(cos_t))*i.N + IofR*r.getDirection();
+        refractDir.normalize();
         ray RefrRay (iPoint, refractDir, ray::REFRACTION);
         refraction = traceRay(RefrRay, Vec3d(1.0,1.0,1.0), depth);
-      }
+        
+        // use threshold
+        for(int i=0; i < 3; i++){
+          if(refraction[i] > thresh[i]){
+            refraction[i] = 1;
+          }
+        }
+      } 
     }
+    refraction = Vec3d(0.0,0.0,0.0);
+    
 
     return m.shade(scene, r, i) + prod(m.kr(i), reflection) + prod(m.kt(i), refraction);
 
