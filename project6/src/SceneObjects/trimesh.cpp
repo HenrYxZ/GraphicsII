@@ -4,6 +4,16 @@
 
 using namespace std;
 
+Vec3d crossProd(const Vec3d& a, const Vec3d& b){
+  // get the normal of the triangle
+  double n1 = a[1]*b[2] - a[2]*b[1];
+  double n2 = a[2]*b[0] - a[0]*b[2];
+  double n3 = a[0]*b[1] - a[1]*b[0];
+
+  return Vec3d(n1,n2,n3);
+}
+
+
 Trimesh::~Trimesh()
 {
   for( Materials::iterator i = materials.begin(); i != materials.end(); ++i )
@@ -82,7 +92,39 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
   const Vec3d& b = parent->vertices[ids[1]];
   const Vec3d& c = parent->vertices[ids[2]];
 
-  // YOUR CODE HERE
+  // tangent vectors
+  Vec3d t1 = c - a;
+  Vec3d t2 = b - a;
+
+  Vec3d n = crossProd(t1, t2);
+
+  double D = -n*a;
+
+  // if the surface is parallel to the ray there is no intersection
+  if(r.getDirection()*n == 0)
+  {
+    return false;
+  }  
+
+  double t = -(n*r.getPosition() )/(n*r.getDirection() );
+
+  // point of intersection with the same plane (doesn't mean intersection with triangle) p(t)=p+t*d
+  Vec3d p = r.getPosition() + t * r.getDirection();
+
+  // triangle area
+  double A = n.length()/2;
+
+  // barycentric coords
+  double wa = crossProd(c-b, p-c).length() / (2*A);
+  double wb = crossProd(a-c, p-a).length() / (2*A);
+  double wc = crossProd(b-a, p-b).length() / (2*A);
+
+  if(wa <= 1 && 0 <= wa && wb <= 1 && 0 <= wb && wc <= 1 && 0 <= wc) {
+    i.setT(t);
+    i.setBary(wa, wb, wc);
+    i.setN(n);
+    return true;
+  }
 
   return false;
 }
@@ -116,4 +158,5 @@ void Trimesh::generateNormals()
   delete [] numFaces;
   vertNorms = true;
 }
+
 
