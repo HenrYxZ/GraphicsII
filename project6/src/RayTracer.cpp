@@ -132,7 +132,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
             refraction[i] = 1;
           }
         }
-      } else { cout << "TIR" << endl; }
+      }
     }
 
     return prod(m.shade(scene, r, i), shadow) + prod(m.kr(i), reflection) + prod(m.kt(i), refraction);
