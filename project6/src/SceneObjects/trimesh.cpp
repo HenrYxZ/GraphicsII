@@ -93,10 +93,10 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
   const Vec3d& c = parent->vertices[ids[2]];
 
   // tangent vectors
-  Vec3d t1 = c - a;
-  Vec3d t2 = b - a;
-
-  Vec3d n = crossProd(t1, t2);
+  Vec3d t1 = b - a;
+  Vec3d t2 = c - a;
+  
+  Vec3d n = crossProd(t1,t2);
 
   double D = -n*a;
 
@@ -106,10 +106,10 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     return false;
   }  
 
-  double t = -(n*r.getPosition() )/(n*r.getDirection() );
+  double t = -(n*r.getPosition() + D)/(n*r.getDirection() );
 
   // point of intersection with the same plane (doesn't mean intersection with triangle) p(t)=p+t*d
-  Vec3d p = r.getPosition() + t * r.getDirection();
+  Vec3d p = r.at(t);
 
   // triangle area
   double A = n.length()/2;
@@ -123,6 +123,8 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     i.setT(t);
     i.setBary(wa, wb, wc);
     i.setN(n);
+    i.setObject(this);
+    i.setMaterial(this->getMaterial() );
     return true;
   }
 
