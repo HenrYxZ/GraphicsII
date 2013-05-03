@@ -107,19 +107,21 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
   }  
 
   double t = -(n*r.getPosition() + D)/(n*r.getDirection() );
+  if (t <= RAY_EPSILON)
+    return false;
 
   // point of intersection with the same plane (doesn't mean intersection with triangle) p(t)=p+t*d
   Vec3d p = r.at(t);
 
   // triangle area
-  double A = n.length()/2;
+  double A = n.length()/2.0;
 
   // barycentric coords
-  double wa = crossProd(c-b, p-c).length() / (2*A);
-  double wb = crossProd(a-c, p-a).length() / (2*A);
-  double wc = crossProd(b-a, p-b).length() / (2*A);
+  double wa = crossProd(c-b, p-b).length() / (2.0*A);
+  double wb = crossProd(a-c, p-c).length() / (2.0*A);
+  double wc = crossProd(b-a, p-a).length() / (2.0*A);
 
-  if(wa <= 1 && 0 <= wa && wb <= 1 && 0 <= wb && wc <= 1 && 0 <= wc) {
+  if((wa >= 0.0) && (wb >= 0.0) && (wc >= 0.0) && (wa+wb+wc-1.0 <= 0.00001)) {
     i.setT(t);
     i.setBary(wa, wb, wc);
     i.setN(n);
