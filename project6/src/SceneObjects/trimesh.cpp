@@ -124,12 +124,23 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
   if((wa >= 0.0) && (wb >= 0.0) && (wc >= 0.0) && (wa+wb+wc-1.0 <= 0.00001)) {
     i.setT(t);
     i.setBary(wa, wb, wc);
-    Vec3d inter_n = wa*parent->normals[ids[0]] + wb*parent->normals[ids[1]]
-                  + wc*parent->normals[ids[2]];
-    inter_n.normalize();
-    i.setN(inter_n);
+    if (parent->normals.size() == 0) {
+      i.setN(n);
+    } else {
+      Vec3d inter_n = wa*parent->normals[ids[0]] + wb*parent->normals[ids[1]]
+                    + wc*parent->normals[ids[2]];
+      inter_n.normalize();
+      i.setN(inter_n);
+    }
     i.setObject(this);
-    i.setMaterial(this->getMaterial() );
+    if (parent->materials.size() == 0) {
+      i.setMaterial(this->getMaterial() );
+    } else {
+      Material inter_m = wa*(*parent->materials[ids[0]]);
+      inter_m += wb*(*parent->materials[ids[1]]);
+      inter_m += wc*(*parent->materials[ids[2]]);
+      i.setMaterial(inter_m);
+    }
     return true;
   }
 
