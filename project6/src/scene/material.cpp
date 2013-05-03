@@ -36,10 +36,10 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
   Vec3d l;  // Light direction vector
   Vec3d diffuse_factor;
   Vec3d spec_factor;
+  // Vec3d reflec;  // for Phong specular
   Vec3d half_angle;  // for Blinn specular
-  Vec3d viewer = r.getDirection();
+  Vec3d viewer = -1.0*r.getDirection();
   viewer.normalize();
-  //Vec3d reflec;
   Vec3d Lcol;  // individual light color
   Vec3d color;
   color = ke(i) + prod(ka(i), scene->ambient() );
@@ -53,13 +53,14 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
     l.normalize();
     diffuse_factor = kd(i) * max(0.0, normal*l);
     // --Phong specular--
-    // reflec = (2*(l*normal)*normal) - l;
+    // reflec = (2.0*(l*normal)*normal) - l;
     // reflec.normalize();
     // spec_factor = ks(i) * max(0.0, pow(viewer*reflec, shininess(i)));
+
     // --Blinn specular--
-    half_angle = (l+viewer) / (l+viewer).length();
+    half_angle = l+viewer;
     half_angle.normalize();
-    spec_factor = ks(i) * max(0.0, pow(normal*half_angle, shininess(i)));
+    spec_factor = ks(i) * max(0.0, pow(normal*half_angle, 4.0*shininess(i)));
     color += prod(Lcol, (diffuse_factor + spec_factor))
                *min(1.0, pLight->distanceAttenuation(P));
   }  

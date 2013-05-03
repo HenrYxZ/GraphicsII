@@ -48,7 +48,7 @@ Vec3d RayTracer::trace( double x, double y )
 Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
 {
 
-  if (depth == 5)
+  if (depth > traceUI->getDepth())
     return Vec3d( 0.0, 0.0, 0.0 );
 
   ++depth;
