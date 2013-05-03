@@ -17,8 +17,17 @@ Vec3d DirectionalLight::shadowAttenuation( const Vec3d& P ) const
 {
   // YOUR CODE HERE:
   // You should implement shadow-handling code here.
+    Vec3d shadow = Vec3d(1.0, 1.0, 1.0);
+  Vec3d d = getDirection(P);
+  isect i;
+  ray shadow_ray (P, d, ray::SHADOW);
+  while (scene->intersect(shadow_ray, i)) {
+    const Material& m = i.getMaterial();
+    shadow = prod(shadow, m.kt(i));
+    shadow_ray = ray(shadow_ray.at(i.t), d, ray::SHADOW);
+  }
 
-  return Vec3d(1,1,1);
+  return shadow;
 
 }
 
@@ -65,7 +74,17 @@ Vec3d PointLight::shadowAttenuation(const Vec3d& P) const
 {
   // YOUR CODE HERE:
   // You should implement shadow-handling code here.
+  Vec3d shadow = Vec3d(1.0, 1.0, 1.0);
+  Vec3d d = getDirection(P);
+  isect i;
+  ray shadow_ray (P, d, ray::SHADOW);
+  // make sure the intersection point is between point P and the light
+  while ((scene->intersect(shadow_ray, i)) & ((d*getDirection(shadow_ray.at(i.t))) >= 0)) {
+    const Material& m = i.getMaterial();
+    shadow = prod(shadow, m.kt(i));
+    shadow_ray = ray(shadow_ray.at(i.t), d, ray::SHADOW);
+  }
 
-  return Vec3d(1,1,1);
+  return shadow;
 
 }

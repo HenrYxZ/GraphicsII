@@ -61,8 +61,9 @@ Vec3d Material::shade( Scene *scene, const ray& r, const isect& i ) const
     half_angle = l+viewer;
     half_angle.normalize();
     spec_factor = ks(i) * max(0.0, pow(normal*half_angle, 4.0*shininess(i)));
-    color += prod(Lcol, (diffuse_factor + spec_factor))
+    Lcol = prod(Lcol, (diffuse_factor + spec_factor))
                *min(1.0, pLight->distanceAttenuation(P));
+    color += prod(Lcol, pLight->shadowAttenuation(P));
   }  
     
 

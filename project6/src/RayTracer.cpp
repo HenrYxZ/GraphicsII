@@ -71,7 +71,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
     const Material& m = i.getMaterial();
 
     Vec3d iPoint = r.at(i.t);  // point of intersection
-
+/*
     // --Shadows--
     Vec3d shadow = Vec3d(1.0, 1.0, 1.0);
     //for (vector<Light*>::const_iterator litr = scene->beginLights();
@@ -87,7 +87,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
         shadow = prod(shadow, mm.kt(aux));
       }
     //}
-
+*/
     // --Reflection--
     Vec3d reflection = Vec3d(0.0,0.0,0.0);
     if (m.kr(i) != Vec3d(0.0,0.0,0.0)) {
@@ -135,7 +135,7 @@ Vec3d RayTracer::traceRay( const ray& r, const Vec3d& thresh, int depth )
       }
     }
 
-    return prod(m.shade(scene, r, i), shadow) + prod(m.kr(i), reflection) + prod(m.kt(i), refraction);
+    return m.shade(scene, r, i) + prod(m.kr(i), reflection) + prod(m.kt(i), refraction);
 
 	
   } else {
