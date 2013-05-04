@@ -1,0 +1,81 @@
+SBT-raytracer 1.0
+
+camera {
+  position = (2, 6, 20);
+  viewdir = (-0.3, -0.2, -1);
+  aspectratio = 1;
+  updir = (0,1,0);
+}
+
+directional_light {
+  direction = (0.0, -0.5, -0.6);
+  color = (1,1,1);
+}
+
+point_light {
+  position = (0, 5, 1);
+  color = (1,1,0.6);
+}
+
+scale(80,
+    rotate(1,0,0,1.5708,
+        square {
+            material = {
+              diffuse = map("grass.bmp");
+              //diffuse = (0.1,0.9,0.1);
+              ambient = (0,1,0);
+              specular = (0.6,0.7,0.6);
+              shininess = 0.8;
+              reflective = (0,0,0);
+              transmissive = (0.6,1,0.6);
+            }}))
+
+translate(0,3,0,
+   scale(2,
+    sphere {
+       material = {
+          diffuse = (0.8,0.1,0.4);
+          ambient = (1,1,1);
+          specular = (1,1,1);
+          shininess = 12;
+       }}))
+
+translate(-1,4,9,
+  scale(3,1,1,
+    cylinder {
+      material = {
+        diffuse = (0,0.2,0.2);
+        emissive = (0, 0.2, 0);
+        transmissive = (0.7,0.7,0.7);
+        index = 1.49;
+      }}))
+
+// Mirrors
+translate(-5,5,-0.5,
+  scale(1,10,40,
+    box {
+      material = {
+        diffuse = (0.1,0.1,0.1);
+        specular = (0.8,0.8,0.8);
+        shininess = 128;
+    }}))
+
+translate(5,5,-0.5,
+  scale(1,10,40,
+    rotate(0,1,0,0.2,
+    box {
+      material = {
+        diffuse = (0.1,0.1,0.1);
+        specular = (0.5,0.5,1);
+        shininess = 128;
+    }})))
+
+translate(0,5,-20,
+  scale(20,20,1,
+    box {
+      material = {
+        diffuse = (0.1,0.1,0.1);
+        specular = (1,0.8,0.8);
+        shininess = 128;
+    }}))
+
