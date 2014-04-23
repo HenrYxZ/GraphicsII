@@ -4,6 +4,8 @@
 
 #include <assert.h>
 
+#include <unistd.h>
+
 #include "CommandLineUI.h"
 #include "../fileio/bitmap.h"
 
